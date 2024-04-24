@@ -26,7 +26,17 @@ public class BetController : Controller
     [Authorize(Policy = "Client")]
     public async Task<IActionResult> Post([FromBody] BetDTORequest request)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var tk = HttpContext.User.Identity as ClaimsIdentity;
+            var em = tk.FindFirst(ClaimTypes.Email)?.Value;
+            return Created("", _repository.Post(request, em));
+        }
+        catch (Exception e)
+        {
+            
+            return BadRequest(new { message = e.Message });
+        }
     }
 
     [HttpGet("{BetId}")]
