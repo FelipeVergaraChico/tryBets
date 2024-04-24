@@ -34,7 +34,6 @@ public class BetController : Controller
         }
         catch (Exception e)
         {
-            
             return BadRequest(new { message = e.Message });
         }
     }
@@ -44,6 +43,15 @@ public class BetController : Controller
     [Authorize(Policy = "Client")]
     public IActionResult Get(int BetId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var tk = HttpContext.User.Identity as ClaimsIdentity;
+            var em = tk.FindFirst(ClaimTypes.Email)?.Value;
+            return Ok(_repository.Get(BetId, em));
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new { message = e.Message });
+        }
     }
 }
